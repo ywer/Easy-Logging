@@ -20,7 +20,6 @@ MessageLevel.Warning = Warning
 MessageLevel.Error = Error
 
 
-Github: https://github.com/ywer/Easy-Logging
 
 Please dont delete Copyright from the Code
 
