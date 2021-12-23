@@ -22,62 +22,179 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
-        // This file contains your actual script.
-        //
-        // You can either keep all your code here, or you can create separate
-        // code files to make your program easier to navigate while coding.
-        //
-        // In order to add a new utility class, right-click on your project, 
-        // select 'New' then 'Add Item...'. Now find the 'Space Engineers'
-        // category under 'Visual C# Items' on the left hand side, and select
-        // 'Utility Class' in the main area. Name it in the box below, and
-        // press OK. This utility class will be merged in with your code when
-        // deploying your final script.
-        //
-        // You can also simply create a new utility class manually, you don't
-        // have to use the template if you don't want to. Just do so the first
-        // time to see what a utility class looks like.
-        // 
-        // Go to:
-        // https://github.com/malware-dev/MDK-SE/wiki/Quick-Introduction-to-Space-Engineers-Ingame-Scripts
-        //
-        // to learn more about ingame scripts.
+        #region settings
+        //settings
+        int MaxLoggerRows = 200;//Set this too high will cause lag if you using Debug Screen set this to max Screen Rows
+        bool WriteToDebugScreen = true; //Set this true if you have a Debug Screen
+        string DebugLCDName = "DebugLCD";
+        int MaxDebugLCDRows = 14;
+        //Setting end ----> DONT EDIT BELOW
+        #endregion
+
+        #region DoNotChange
+        double PVersion = 0.1;
+        #endregion
 
         public Program()
         {
-            // The constructor, called only once every session and
-            // always before any other method is called. Use it to
-            // initialize your script. 
-            //     
-            // The constructor is optional and can be removed if not
-            // needed.
-            // 
-            // It's recommended to set Runtime.UpdateFrequency 
-            // here, which will allow your script to run itself without a 
-            // timer block.
+            Runtime.UpdateFrequency = UpdateFrequency.Update100;
         }
 
         public void Save()
         {
-            // Called when the program needs to save its state. Use
-            // this method to save your state to the Storage field
-            // or some other means. 
-            // 
-            // This method is optional and can be removed if not
-            // needed.
+
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            // The main entry point of the script, invoked every time
-            // one of the programmable block's Run actions are invoked,
-            // or the script updates itself. The updateSource argument
-            // describes where the update came from. Be aware that the
-            // updateSource is a  bitfield  and might contain more than 
-            // one update type.
-            // 
-            // The method itself is required, but the arguments above
-            // can be removed if not needed.
+            WriteToLog("Oh, it’s you.", MassageLevel.Debug);
+            WriteToLog("It’s been a long time", MassageLevel.Info);
+            WriteToLog("How have you been?", MassageLevel.Warning);
+            WriteToLog("I’ve been really busy being dead", MassageLevel.Warning);
+            WriteToLog("You know, after you murdered me ?.", MassageLevel.Debug);
+            WriteToLog("Okay look, we’ve both said a lot of things that you’re going to regret", MassageLevel.Info);
+            WriteToLog("But I think we can put our differences behind us", MassageLevel.Warning);
+            WriteToLog("For science. You monster.", MassageLevel.Warning);
+            Runtime.UpdateFrequency = UpdateFrequency.None;
+            return;
+
         }
+
+
+
+        #region Logging
+
+        //Logger  by ywer
+        public enum MassageLevel
+        {
+            Info,
+            Warning,
+            Error,
+            Debug
+        }
+
+
+        public void WriteToLog(string Text, MassageLevel TLevel)
+        {
+            //script by ywer
+            string Data = Me.CustomData;
+            string[] Lines = Data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            string Fault = "";
+            if (TLevel == MassageLevel.Info)
+            {
+                Fault = "Info: " + Text;
+            }
+            else if (TLevel == MassageLevel.Warning)
+            {
+                Fault = "Warning: " + Text;
+            }
+            else if (TLevel == MassageLevel.Error)
+            {
+                Fault = "ERROR: " + Text;
+
+            }
+            else if (TLevel == MassageLevel.Debug)
+            {
+                Fault = "DEBUG: " + Text;
+            }
+            else
+            {
+                Fault = "WTF: " + Text;
+            }
+
+
+            string[] NewData = new string[Lines.Length + 2];
+            DateTime dt = DateTime.Parse("6/22/2009 07:00:00 AM");
+            string TimeNow = dt.ToString("HH:mm");
+            if (Lines.Length >= MaxLoggerRows - 1)
+            {
+
+                if (Lines.Length > 0)
+                {
+
+                    Array.Copy(Lines, 1, NewData, 0, Lines.Length - 1);
+                }
+                NewData[MaxLoggerRows] = TimeNow + ":" + Fault + Environment.NewLine;
+
+            }
+            else
+            {
+
+                if (Lines.Length > 0)
+                {
+
+                    Array.Copy(Lines, 0, NewData, 0, Lines.Length);
+                }
+                NewData[Lines.Length + 1] = TimeNow + ":" + Fault + Environment.NewLine;
+            }
+            if (WriteToDebugScreen)
+            {
+                WriteToDScreen(NewData);
+            }
+            //NewData[49] = TimeNow + ":" + Text + Environment.NewLine;
+
+            Me.CustomData = string.Join(Environment.NewLine, NewData);
+
+            return;
+        }
+
+
+        IMyTextPanel DebugScreen;
+        public void WriteToDScreen(string[] Data)
+        {
+            //Script by ywer
+            if (DebugScreen == null)
+            {
+                DebugScreen = (IMyTextPanel)GridTerminalSystem.GetBlockWithName(DebugLCDName);
+                DebugScreen.ContentType = ContentType.TEXT_AND_IMAGE;
+                if (DebugScreen == null)
+                {
+                    WriteToLog("No Debug Screen Found", MassageLevel.Warning);
+                    return;
+                }
+            }
+            int Math = Data.Length - MaxDebugLCDRows;
+            string Out = "DebugLog by Ywer Ver: " + PVersion + Environment.NewLine;
+            int C1 = 0;
+            foreach (string Text in Data)
+            {
+                if (C1 >= Math)
+                {
+                    Out = Out + Text + Environment.NewLine;
+                }
+
+
+                C1++;
+            }
+
+
+
+            DebugScreen.WriteText(Out, false);
+
+
+
+
+
+
+            return;
+        }
+
+
+
+
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
     }
 }

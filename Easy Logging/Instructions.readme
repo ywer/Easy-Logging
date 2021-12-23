@@ -1,5 +1,10 @@
 ﻿R e a d m e
 -----------
+just Copy to your Code and Use:
+WriteToLog("test", MassageLevel.Info)
 
-In this file you can include any instructions or other comments you want to have injected onto the 
-top of your final script. You can safely delete this file if you do not want any such comments.
+If you Want to use a Debug Screen just name the Screen "DebugLCD"
+
+Please dont delete Copyright from the Code
+
+mfg ywer
