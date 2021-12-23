@@ -1,0 +1,10 @@
+R e a d m e
+-----------
+just Copy to your Code and Use:
+WriteToLog("test", MassageLevel.Info)
+
+If you Want to use a Debug Screen just name the Screen "DebugLCD"
+
+Please dont delete Copyright from the Code
+
+mfg ywer
