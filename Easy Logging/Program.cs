@@ -32,7 +32,7 @@ namespace IngameScript
         #endregion
 
         #region DoNotChange
-        double PVersion = 0.1;
+        double PVersion = 0.2;
         #endregion
 
         public Program()
@@ -105,8 +105,7 @@ namespace IngameScript
 
 
             string[] NewData = new string[Lines.Length + 2];
-            DateTime dt = DateTime.Parse("6/22/2009 07:00:00 AM");
-            string TimeNow = dt.ToString("HH:mm");
+            DateTime TimeNow = System.DateTime.Now;
             if (Lines.Length >= MaxLoggerRows - 1)
             {
 
